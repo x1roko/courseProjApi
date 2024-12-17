@@ -17,7 +17,8 @@ namespace courseProjAPI
             builder.Services.AddDbContextPool<BrosShopDbContext>(options => 
                 options.UseMySql(_connectionString, ServerVersion.AutoDetect(_connectionString)));
 
-            var key = Encoding.ASCII.GetBytes("xiroko-server, xexexexexexexexexe");
+            var secretKey = builder.Configuration["SecretKey"];
+            var key = Encoding.UTF8.GetBytes(secretKey);
             builder.Services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
