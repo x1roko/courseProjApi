@@ -14,7 +14,7 @@ namespace courseProjAPI.Controllers
     public class ImagesController : ControllerBase
     {
         private readonly BrosShopDbContext _context;
-        private readonly string _fileDirectory = "/var/media/";
+        private readonly string _fileDirectory = "/app/media/";
 
         public ImagesController(BrosShopDbContext context)
         {
