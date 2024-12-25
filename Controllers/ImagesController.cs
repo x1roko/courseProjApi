@@ -14,7 +14,7 @@ namespace courseProjAPI.Controllers
     public class ImagesController : ControllerBase
     {
         private readonly BrosShopDbContext _context;
-        private readonly string _fileDirectory = "/app/media/";
+        private readonly string _fileDirectory = "/app/media";
 
         public ImagesController(BrosShopDbContext context)
         {
@@ -41,10 +41,8 @@ namespace courseProjAPI.Controllers
 
             var contentType = "application/octet-stream"; 
 
-            using (var file = new FileStream( imagePath,FileMode.Open, FileAccess.Read, FileShare.Read, 0, true))
-            {
-                return File(file, contentType, brosShopImage.BrosShopImageTitle);
-            }
+            var file = new FileStream( imagePath,FileMode.Open, FileAccess.Read, FileShare.Read, 0, true);
+            return File(file, contentType, brosShopImage.BrosShopImageTitle);
         }
 
 
@@ -54,6 +52,13 @@ namespace courseProjAPI.Controllers
             if (file == null || file.Length == 0)
             {
                 return BadRequest("Файл не загружен.");
+            }
+
+            // Проверка существования продукта
+            var productExists = await _context.BrosShopProducts.AnyAsync(p => p.BrosShopProductId == productId);
+            if (!productExists)
+            {
+                return NotFound($"Product with ID {productId} not found.");
             }
 
             // Генерация уникального имени файла или использование оригинального имени файла
@@ -78,7 +83,7 @@ namespace courseProjAPI.Controllers
             await _context.SaveChangesAsync();
 
             // Возврат созданной записи изображения
-            return CreatedAtAction(nameof(GetBrosShopImage), new { id = brosShopImage.BrosShopImagesId}, brosShopImage);
+            return CreatedAtAction(nameof(GetBrosShopImage), new { id = brosShopImage.BrosShopImagesId }, brosShopImage);
         }
     }
 }
